@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Brain, Database, BarChart2, Code2, Server, Layers, Loader2 } from 'lucide-react';
+import { Brain, Database, BarChart2, Code2, Layers, X, Loader2 } from 'lucide-react';
 
 const API_URL = 'https://backend-37sm.onrender.com/api';
 
@@ -40,6 +40,11 @@ const categoryConfig: Record<string, { icon: React.ReactNode; color: string; des
     color: 'teal',
     description: "Savoir traduire les chiffres en décisions stratégiques. Data Visualization avec Matplotlib/Seaborn/Tableau, storytelling de données, et connaissance métier du secteur."
   },
+  'Data Science': {
+    icon: <Brain className="w-5 h-5" />,
+    color: 'purple',
+    description: "Domaine interdisciplinaire combinant statistiques, informatique et expertise métier pour extraire des connaissances et des insights à partir des données."
+  },
   'Autre': {
     icon: <Code2 className="w-5 h-5" />,
     color: 'gray',
@@ -53,6 +58,7 @@ const colorMap: Record<string, string> = {
   teal: 'bg-teal-500',
   sky: 'bg-sky-500',
   gray: 'bg-gray-500',
+  purple: 'bg-purple-500',
 };
 
 const iconColorMap: Record<string, string> = {
@@ -61,11 +67,13 @@ const iconColorMap: Record<string, string> = {
   teal: 'text-teal-400 bg-teal-500/10 border-teal-500/20',
   sky: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
   gray: 'text-gray-400 bg-gray-500/10 border-gray-500/20',
+  purple: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
 };
 
 export default function Skills() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<SkillCategory | null>(null);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -132,31 +140,21 @@ export default function Skills() {
           {categories.map((cat) => (
             <div
               key={cat.label}
-              className="bg-gray-900 border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-all duration-300 group"
+              onClick={() => setSelectedCategory(cat)}
+              className="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-cyan-500/50 hover:cursor-pointer transition-all duration-300 group"
             >
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-4">
                 <div className={`p-2 rounded-lg border ${iconColorMap[cat.color]}`}>
                   {cat.icon}
                 </div>
-                <h3 className="text-white font-bold">{cat.label}</h3>
+                <h3 className="text-white font-bold text-sm">{cat.label}</h3>
               </div>
-              <p className="text-gray-400 text-sm mb-4 leading-relaxed">{cat.description}</p>
-              <div className="space-y-3">
-                {cat.skills.map((skill) => (
-                  <div key={skill.id}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-400">{skill.name}</span>
-                      <span className="text-gray-600">{skill.level}%</span>
-                    </div>
-                    <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${colorMap[cat.color]} transition-all duration-700`}
-                        style={{ width: `${skill.level}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">
+                {cat.description}
+              </p>
+              <p className="text-cyan-400 text-xs font-medium group-hover:underline">
+                Voir les détails →
+              </p>
             </div>
           ))}
         </div>
@@ -175,6 +173,58 @@ export default function Skills() {
           </div>
         </div>
       </div>
+
+      {/* Modal pour les détails */}
+      {selectedCategory && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedCategory(null)}
+        >
+          <div
+            className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-gray-800 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`p-3 rounded-lg border ${iconColorMap[selectedCategory.color]}`}>
+                    {selectedCategory.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">{selectedCategory.label}</h3>
+                </div>
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <p className="text-gray-300 text-base mb-6 leading-relaxed">{selectedCategory.description}</p>
+
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-white mb-3">Compétences</h4>
+                {selectedCategory.skills.map((skill) => (
+                  <div key={skill.id}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-300">{skill.name}</span>
+                      <span className="text-gray-400">{skill.level}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${colorMap[selectedCategory.color]} transition-all duration-700`}
+                        style={{ width: `${skill.level}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
