@@ -92,10 +92,10 @@ export default function Chatbox() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-cyan-500 hover:bg-cyan-600 text-white p-4 rounded-full shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 z-50 group"
+          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-cyan-500 hover:bg-cyan-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 z-50 group"
         >
-          <MessageSquare className="w-6 h-6" />
-          <span className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="hidden sm:block absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Discuter avec l'assistant
           </span>
         </button>
@@ -103,7 +103,7 @@ export default function Chatbox() {
 
       {/* Chatbox */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl shadow-black/50 z-50 flex flex-col">
+        <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-96 h-[calc(100vh-2rem)] sm:h-[500px] bg-gray-900 border border-gray-800 rounded-t-2xl sm:rounded-2xl shadow-2xl shadow-black/50 z-50 flex flex-col">
           {/* Header */}
           <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-4 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
