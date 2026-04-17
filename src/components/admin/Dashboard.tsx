@@ -13,8 +13,8 @@ export default function Dashboard() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl w-full max-w-md">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-gray-900 border border-gray-800 p-6 sm:p-8 rounded-2xl w-full max-w-md">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">Delamou</h2>
           <div className="space-y-4">
             <div>
@@ -41,74 +41,72 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-900 border-r border-gray-800 p-6">
-        <h1 className="text-xl font-bold text-white mb-8">Delamou</h1>
-        
-        <nav className="space-y-2">
+    <div className="min-h-screen bg-gray-950 flex flex-col sm:flex-row">
+      {/* Sidebar - bottom bar on mobile, side on desktop */}
+      <div className="sm:w-64 bg-gray-900 border-t sm:border-t-0 sm:border-r border-gray-800 p-2 sm:p-6 fixed bottom-0 left-0 right-0 sm:relative z-40 sm:z-auto">
+        <h1 className="hidden sm:block text-xl font-bold text-white mb-8">Delamou</h1>
+
+        <nav className="flex sm:flex-col justify-around sm:justify-start sm:space-y-2">
           <button
             onClick={() => setActiveView('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-xs sm:text-base ${
               activeView === 'dashboard'
                 ? 'bg-cyan-500 text-white'
                 : 'text-gray-400 hover:bg-gray-800 hover:text-white'
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
-            Tableau de bord
+            <span className="hidden sm:inline">Tableau de bord</span>
           </button>
-          
+
           <button
             onClick={() => setActiveView('projects')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-xs sm:text-base ${
               activeView === 'projects'
                 ? 'bg-cyan-500 text-white'
                 : 'text-gray-400 hover:bg-gray-800 hover:text-white'
             }`}
           >
             <FolderKanban className="w-5 h-5" />
-            Projets
+            <span className="hidden sm:inline">Projets</span>
           </button>
-          
+
           <button
             onClick={() => setActiveView('messages')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-xs sm:text-base ${
               activeView === 'messages'
                 ? 'bg-cyan-500 text-white'
                 : 'text-gray-400 hover:bg-gray-800 hover:text-white'
             }`}
           >
             <MessageSquare className="w-5 h-5" />
-            Messages
+            <span className="hidden sm:inline">Messages</span>
           </button>
-          
+
           <button
             onClick={() => setActiveView('skills')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`flex flex-col sm:flex-row items-center gap-1 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-xs sm:text-base ${
               activeView === 'skills'
                 ? 'bg-cyan-500 text-white'
                 : 'text-gray-400 hover:bg-gray-800 hover:text-white'
             }`}
           >
             <Zap className="w-5 h-5" />
-            Compétences
+            <span className="hidden sm:inline">Compétences</span>
           </button>
-        </nav>
 
-        <div className="absolute bottom-6 left-6">
           <button
             onClick={() => setIsLoggedIn(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+            className="hidden sm:flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
           >
             <LogOut className="w-5 h-5" />
             Déconnexion
           </button>
-        </div>
+        </nav>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-4 sm:p-8 pb-20 sm:pb-8">
         {activeView === 'dashboard' && <DashboardHome />}
         {activeView === 'projects' && <ProjectsAdmin />}
         {activeView === 'messages' && <MessagesAdmin />}
