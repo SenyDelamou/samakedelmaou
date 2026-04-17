@@ -1,6 +1,26 @@
 import { Github, Linkedin, Download, ArrowDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Hero() {
+  const [projectCount, setProjectCount] = useState(0);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
+        const response = await fetch(`${apiUrl}/api/projects`);
+        if (response.ok) {
+          const projects = await response.json();
+          setProjectCount(projects.length);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des projets:', error);
+        setProjectCount(0);
+      }
+    };
+
+    fetchProjects();
+  }, []);
   return (
     <section
       id="home"
@@ -77,7 +97,7 @@ export default function Hero() {
             </div>
             <div className="absolute -top-4 -left-4 bg-gray-900 border border-gray-800 rounded-2xl px-4 py-2 shadow-xl">
               <p className="text-xs text-gray-500">Projets</p>
-              <p className="text-white font-bold text-lg">20+</p>
+              <p className="text-white font-bold text-lg">{projectCount}</p>
             </div>
           </div>
         </div>
