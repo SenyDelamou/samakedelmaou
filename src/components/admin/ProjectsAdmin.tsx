@@ -281,6 +281,7 @@ export default function ProjectsAdmin() {
                   <option value="NLP">NLP</option>
                   <option value="Visualisation de données">Visualisation de données</option>
                   <option value="Vision par ordinateur">Vision par ordinateur</option>
+                  <option value="Autre">Autre</option>
                 </select>
               </div>
 

@@ -15,19 +15,36 @@ interface SkillCategory {
   icon: React.ReactNode;
   label: string;
   color: string;
+  description: string;
   skills: Skill[];
 }
 
-const categoryConfig: Record<string, { icon: React.ReactNode; color: string }> = {
-  'Machine Learning': { icon: <Brain className="w-5 h-5" />, color: 'cyan' },
-  'Deep Learning': { icon: <Layers className="w-5 h-5" />, color: 'blue' },
-  'Programmation': { icon: <Code2 className="w-5 h-5" />, color: 'teal' },
-  'Ingénierie des données': { icon: <Database className="w-5 h-5" />, color: 'sky' },
-  'Visualisation': { icon: <BarChart2 className="w-5 h-5" />, color: 'cyan' },
-  'MLOps & Outils': { icon: <Server className="w-5 h-5" />, color: 'blue' },
-  'Data Science': { icon: <Brain className="w-5 h-5" />, color: 'cyan' },
-  'DevOps': { icon: <Server className="w-5 h-5" />, color: 'blue' },
-  'Outils': { icon: <BarChart2 className="w-5 h-5" />, color: 'cyan' },
+const categoryConfig: Record<string, { icon: React.ReactNode; color: string; description: string }> = {
+  'Expertise Mathématique et Statistique': {
+    icon: <Brain className="w-5 h-5" />,
+    color: 'cyan',
+    description: "C'est le socle du métier. Il s'agit de comprendre ce qui se passe sous le capot des algorithmes. Statistiques descriptives et inférentielles, algèbre linéaire, calcul et probabilités pour modéliser l'incertitude."
+  },
+  'Programmation et Ingénierie des Données': {
+    icon: <Database className="w-5 h-5" />,
+    color: 'sky',
+    description: "La capacité à transformer une idée en un outil fonctionnel. Python, R, SQL, Pandas, NumPy, écosystème Big Data (Spark, Hadoop), et Web Scraping."
+  },
+  'Machine Learning et Modélisation': {
+    icon: <Layers className="w-5 h-5" />,
+    color: 'blue',
+    description: "La partie Intelligence Artificielle du métier. Apprentissage supervisé/non-supervisé, Deep Learning avec TensorFlow/PyTorch, et NLP pour le traitement du langage."
+  },
+  'Communication et Business Intelligence': {
+    icon: <BarChart2 className="w-5 h-5" />,
+    color: 'teal',
+    description: "Savoir traduire les chiffres en décisions stratégiques. Data Visualization avec Matplotlib/Seaborn/Tableau, storytelling de données, et connaissance métier du secteur."
+  },
+  'Autre': {
+    icon: <Code2 className="w-5 h-5" />,
+    color: 'gray',
+    description: "Autres compétences techniques et outils non spécifiques à la Data Science."
+  },
 };
 
 const colorMap: Record<string, string> = {
@@ -35,6 +52,7 @@ const colorMap: Record<string, string> = {
   blue: 'bg-blue-500',
   teal: 'bg-teal-500',
   sky: 'bg-sky-500',
+  gray: 'bg-gray-500',
 };
 
 const iconColorMap: Record<string, string> = {
@@ -42,6 +60,7 @@ const iconColorMap: Record<string, string> = {
   blue: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
   teal: 'text-teal-400 bg-teal-500/10 border-teal-500/20',
   sky: 'text-sky-400 bg-sky-500/10 border-sky-500/20',
+  gray: 'text-gray-400 bg-gray-500/10 border-gray-500/20',
 };
 
 export default function Skills() {
@@ -73,11 +92,12 @@ export default function Skills() {
       return acc;
     }, {} as Record<string, Skill[]>)
   ).map(([label, skills]) => {
-    const config = categoryConfig[label] || { icon: <Brain className="w-5 h-5" />, color: 'cyan' };
+    const config = categoryConfig[label] || { icon: <Brain className="w-5 h-5" />, color: 'cyan', description: '' };
     return {
       icon: config.icon,
       label,
       color: config.color,
+      description: config.description,
       skills,
     };
   });
@@ -120,6 +140,7 @@ export default function Skills() {
                 </div>
                 <h3 className="text-white font-bold">{cat.label}</h3>
               </div>
+              <p className="text-gray-400 text-sm mb-4 leading-relaxed">{cat.description}</p>
               <div className="space-y-3">
                 {cat.skills.map((skill) => (
                   <div key={skill.id}>

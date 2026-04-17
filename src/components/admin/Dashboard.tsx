@@ -73,8 +73,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col sm:flex-row">
-      {/* Sidebar - bottom bar on mobile, side on desktop */}
-      <div className="sm:w-64 bg-gray-900 border-t sm:border-t-0 sm:border-r border-gray-800 p-2 sm:p-6 fixed bottom-0 left-0 right-0 sm:relative z-40 sm:z-auto">
+      {/* Sidebar - bottom bar on mobile, fixed side on desktop */}
+      <div className="sm:w-64 bg-gray-900 border-t sm:border-t-0 sm:border-r border-gray-800 p-2 sm:p-6 fixed bottom-0 left-0 right-0 sm:fixed sm:top-0 sm:left-0 sm:right-auto sm:h-screen z-40 sm:z-auto">
         <h1 className="hidden sm:block text-xl font-bold text-white mb-8">Delamou</h1>
 
         <nav className="flex sm:flex-col justify-around sm:justify-start sm:space-y-2">
@@ -137,7 +137,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 sm:p-8 pb-20 sm:pb-8">
+      <div className="flex-1 p-4 sm:p-8 pb-20 sm:pb-8 sm:ml-64">
         {activeView === 'dashboard' && <DashboardHome stats={stats} />}
         {activeView === 'projects' && <ProjectsAdmin />}
         {activeView === 'messages' && <MessagesAdmin />}

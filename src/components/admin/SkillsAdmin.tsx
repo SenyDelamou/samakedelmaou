@@ -229,11 +229,11 @@ export default function SkillsAdmin() {
                   required
                 >
                   <option value="">Sélectionner</option>
-                  <option value="Frontend">Frontend</option>
-                  <option value="Backend">Backend</option>
-                  <option value="Data Science">Data Science</option>
-                  <option value="DevOps">DevOps</option>
-                  <option value="Outils">Outils</option>
+                  <option value="Expertise Mathématique et Statistique">Expertise Mathématique et Statistique</option>
+                  <option value="Programmation et Ingénierie des Données">Programmation et Ingénierie des Données</option>
+                  <option value="Machine Learning et Modélisation">Machine Learning et Modélisation</option>
+                  <option value="Communication et Business Intelligence">Communication et Business Intelligence</option>
+                  <option value="Autre">Autre</option>
                 </select>
               </div>
 
