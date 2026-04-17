@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Mail, Calendar } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 interface Message {
   id: number;
   name: string;
@@ -19,7 +21,7 @@ export default function MessagesAdmin() {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/messages');
+      const response = await fetch(`${API_URL}/messages`);
       const data = await response.json();
       setMessages(data);
     } catch (error) {
@@ -33,7 +35,7 @@ export default function MessagesAdmin() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
     
     try {
-      await fetch(`http://localhost:5001/api/messages/${id}`, {
+      await fetch(`${API_URL}/messages/${id}`, {
         method: 'DELETE'
       });
       fetchMessages();

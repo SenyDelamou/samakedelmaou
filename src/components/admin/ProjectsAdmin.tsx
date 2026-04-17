@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 import { api, type Project } from '../../lib/api';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function ProjectsAdmin() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ export default function ProjectsAdmin() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) return;
     
     try {
-      await fetch(`http://localhost:5001/api/projects/${id}`, {
+      await fetch(`${API_URL}/projects/${id}`, {
         method: 'DELETE'
       });
       fetchProjects();
@@ -83,13 +85,13 @@ export default function ProjectsAdmin() {
 
     try {
       if (editingProject) {
-        await fetch(`http://localhost:5001/api/projects/${editingProject.id}`, {
+        await fetch(`${API_URL}/projects/${editingProject.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData)
         });
       } else {
-        await fetch('http://localhost:5001/api/projects', {
+        await fetch(`${API_URL}/projects`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData)

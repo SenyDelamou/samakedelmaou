@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 interface Message {
   id: number;
   text: string;
@@ -32,7 +34,7 @@ export default function Chatbox() {
 
   const getBotResponse = async (userMessage: string): Promise<string> => {
     try {
-      const response = await fetch('http://localhost:5001/api/chatbot', {
+      const response = await fetch(`${API_URL}/chatbot`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

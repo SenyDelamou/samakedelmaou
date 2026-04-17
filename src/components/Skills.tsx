@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Brain, Database, BarChart2, Code2, Server, Layers, Loader2 } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 interface Skill {
   id: number;
   name: string;
@@ -49,7 +51,7 @@ export default function Skills() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSkills = async () => {
+    const fetchSkills = async () => {`${API_URL}`
       try {
         const response = await fetch('http://localhost:5001/api/skills');
         const data = await response.json();

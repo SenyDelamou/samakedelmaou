@@ -1,14 +1,15 @@
 import { Github, Linkedin, Download, ArrowDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function Hero() {
   const [projectCount, setProjectCount] = useState(0);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
-        const response = await fetch(`${apiUrl}/api/projects`);
+        const response = await fetch(`${API_URL}/projects`);
         if (response.ok) {
           const projects = await response.json();
           setProjectCount(projects.length);

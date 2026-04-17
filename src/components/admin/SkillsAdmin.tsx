@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 interface Skill {
   id: number;
   name: string;
@@ -27,7 +29,7 @@ export default function SkillsAdmin() {
 
   const fetchSkills = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/skills');
+      const response = await fetch(`${API_URL}/skills`);
       const data = await response.json();
       setSkills(data);
     } catch (error) {
@@ -58,7 +60,7 @@ export default function SkillsAdmin() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette compétence ?')) return;
     
     try {
-      await fetch(`http://localhost:5001/api/skills/${id}`, {
+      await fetch(`${API_URL}/skills/${id}`, {
         method: 'DELETE'
       });
       fetchSkills();
@@ -72,13 +74,13 @@ export default function SkillsAdmin() {
     
     try {
       if (editingSkill) {
-        await fetch(`http://localhost:5001/api/skills/${editingSkill.id}`, {
+        await fetch(`${API_URL}/skills/${editingSkill.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
         });
       } else {
-        await fetch('http://localhost:5001/api/skills', {
+        await fetch(`${API_URL}/skills`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
