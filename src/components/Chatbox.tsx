@@ -105,7 +105,7 @@ export default function Chatbox() {
 
       {/* Chatbox */}
       {isOpen && (
-        <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-96 h-[calc(100vh-2rem)] sm:h-[500px] bg-gray-900 border border-gray-800 rounded-t-2xl sm:rounded-2xl shadow-2xl shadow-black/50 z-50 flex flex-col">
+        <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 sm:w-96 h-[70vh] sm:h-[500px] bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl shadow-black/50 z-50 flex flex-col">
           {/* Header */}
           <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-4 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
