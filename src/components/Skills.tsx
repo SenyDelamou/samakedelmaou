@@ -49,9 +49,9 @@ export default function Skills() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSkills = async () => {`${API_URL}`
+    const fetchSkills = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/skills');
+        const response = await fetch(`${API_URL}/skills`);
         const data = await response.json();
         setSkills(data);
       } catch (error) {
