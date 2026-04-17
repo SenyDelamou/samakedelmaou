@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Send, Mail, Github, Linkedin, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, Mail, Github, Linkedin, CheckCircle, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import { api, type Message } from '../lib/api';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
+const API_URL = 'https://backend-37sm.onrender.com/api';
+
 export default function Contact() {
   const [form, setForm] = useState<Message>({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<FormStatus>('idle');
+  const [aiLoading, setAiLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +25,33 @@ export default function Contact() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleAiHelp = async () => {
+    if (aiLoading) return;
+    setAiLoading(true);
+    try {
+      const prompt = form.message.trim()
+        ? `Améliore et reformule ce message de contact de manière professionnelle et convaincante, en gardant le même sens. Retourne uniquement le message reformulé, sans guillemets ni explications : "${form.message}"`
+        : `Rédige un message de contact professionnel pour un Data Scientist. Le message doit exprimer un intérêt pour une collaboration ou un projet lié à la data science. Retourne uniquement le message, sans guillemets ni explications.`;
+
+      const response = await fetch(`${API_URL}/chatbot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response) {
+          setForm((prev) => ({ ...prev, message: data.response.trim() }));
+        }
+      }
+    } catch (error) {
+      console.error('Erreur aide IA:', error);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -126,16 +156,36 @@ export default function Contact() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  Message
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Message
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAiHelp}
+                    disabled={aiLoading}
+                    className="flex items-center gap-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 px-3 py-1.5 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Rédaction...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Aide IA
+                      </>
+                    )}
+                  </button>
+                </div>
                 <textarea
                   name="message"
                   required
                   value={form.message}
                   onChange={handleChange}
                   rows={5}
-                  placeholder="Parlez-moi de votre projet ou opportunité..."
+                  placeholder="Parlez-moi de votre projet ou opportunité... Cliquez sur Aide IA pour être assisté dans la rédaction."
                   className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200 resize-none"
                 />
               </div>
