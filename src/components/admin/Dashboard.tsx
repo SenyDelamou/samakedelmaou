@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { LayoutDashboard, MessageSquare, FolderKanban, LogOut, Users, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { LayoutDashboard, MessageSquare, FolderKanban, LogOut, Zap } from 'lucide-react';
 import ProjectsAdmin from './ProjectsAdmin';
 import MessagesAdmin from './MessagesAdmin';
 import SkillsAdmin from './SkillsAdmin';
+
+const API_URL = 'https://backend-37sm.onrender.com/api';
 
 type AdminView = 'dashboard' | 'projects' | 'messages' | 'skills';
 
@@ -10,6 +12,35 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
+  const [stats, setStats] = useState({ projects: 0, messages: 0, skills: 0 });
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchStats();
+    }
+  }, [isLoggedIn]);
+
+  const fetchStats = async () => {
+    try {
+      const [projectsRes, messagesRes, skillsRes] = await Promise.all([
+        fetch(`${API_URL}/projects`),
+        fetch(`${API_URL}/messages`),
+        fetch(`${API_URL}/skills`)
+      ]);
+
+      const projects = projectsRes.ok ? await projectsRes.json() : [];
+      const messages = messagesRes.ok ? await messagesRes.json() : [];
+      const skills = skillsRes.ok ? await skillsRes.json() : [];
+
+      setStats({
+        projects: projects.length,
+        messages: messages.length,
+        skills: skills.length
+      });
+    } catch (error) {
+      console.error('Erreur récupération stats:', error);
+    }
+  };
 
   if (!isLoggedIn) {
     return (
@@ -107,7 +138,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 p-4 sm:p-8 pb-20 sm:pb-8">
-        {activeView === 'dashboard' && <DashboardHome />}
+        {activeView === 'dashboard' && <DashboardHome stats={stats} />}
         {activeView === 'projects' && <ProjectsAdmin />}
         {activeView === 'messages' && <MessagesAdmin />}
         {activeView === 'skills' && <SkillsAdmin />}
@@ -116,34 +147,34 @@ export default function Dashboard() {
   );
 }
 
-function DashboardHome() {
+function DashboardHome({ stats }: { stats: { projects: number; messages: number; skills: number } }) {
   return (
     <div>
       <h2 className="text-3xl font-bold text-white mb-8">Tableau de bord</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
           <div className="flex items-center justify-between mb-4">
             <FolderKanban className="w-8 h-8 text-cyan-400" />
-            <span className="text-2xl font-bold text-white">4</span>
+            <span className="text-2xl font-bold text-white">{stats.projects}</span>
           </div>
           <p className="text-gray-400">Projets</p>
         </div>
-        
+
         <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
           <div className="flex items-center justify-between mb-4">
             <MessageSquare className="w-8 h-8 text-blue-400" />
-            <span className="text-2xl font-bold text-white">0</span>
+            <span className="text-2xl font-bold text-white">{stats.messages}</span>
           </div>
           <p className="text-gray-400">Messages</p>
         </div>
-        
+
         <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-green-400" />
-            <span className="text-2xl font-bold text-white">--</span>
+            <Zap className="w-8 h-8 text-green-400" />
+            <span className="text-2xl font-bold text-white">{stats.skills}</span>
           </div>
-          <p className="text-gray-400">Visiteurs</p>
+          <p className="text-gray-400">Compétences</p>
         </div>
       </div>
 
