@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, MessageSquare, FolderKanban, LogOut, Zap } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, FolderKanban, LogOut, Zap, Download, Upload } from 'lucide-react';
 import ProjectsAdmin from './ProjectsAdmin';
 import MessagesAdmin from './MessagesAdmin';
 import SkillsAdmin from './SkillsAdmin';
@@ -138,7 +138,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 p-4 sm:p-8 pb-20 sm:pb-8 sm:ml-64">
-        {activeView === 'dashboard' && <DashboardHome stats={stats} />}
+        {activeView === 'dashboard' && <DashboardHome stats={stats} onRefresh={fetchStats} />}
         {activeView === 'projects' && <ProjectsAdmin />}
         {activeView === 'messages' && <MessagesAdmin />}
         {activeView === 'skills' && <SkillsAdmin />}
@@ -147,7 +147,52 @@ export default function Dashboard() {
   );
 }
 
-function DashboardHome({ stats }: { stats: { projects: number; messages: number; skills: number } }) {
+function DashboardHome({ stats, onRefresh }: { stats: { projects: number; messages: number; skills: number }, onRefresh: () => void }) {
+  const handleExport = async () => {
+    try {
+      const res = await fetch(`${API_URL}/projects`);
+      const projects = await res.json();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projects, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "projects_export.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    } catch (error) {
+      console.error('Erreur export:', error);
+      alert('Erreur lors de l\'exportation');
+    }
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        const response = await fetch(`${API_URL}/projects/bulk`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(json)
+        });
+
+        if (response.ok) {
+          alert('Importation réussie !');
+          onRefresh();
+        } else {
+          alert('Erreur lors de l\'importation');
+        }
+      } catch (error) {
+        console.error('Erreur import:', error);
+        alert('Fichier JSON invalide');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div>
       <h2 className="text-3xl font-bold text-white mb-8">Tableau de bord</h2>
@@ -180,15 +225,27 @@ function DashboardHome({ stats }: { stats: { projects: number; messages: number;
 
       <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
         <h3 className="text-xl font-bold text-white mb-4">Actions rapides</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <button className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 p-4 rounded-lg hover:bg-cyan-500/20 transition-colors">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 p-4 rounded-lg hover:bg-cyan-500/20 transition-colors flex flex-col items-center text-center">
             <FolderKanban className="w-6 h-6 mb-2" />
-            <span className="font-medium">Ajouter un projet</span>
+            <span className="font-medium text-sm">Ajouter un projet</span>
           </button>
-          <button className="bg-blue-500/10 border border-blue-500/20 text-blue-400 p-4 rounded-lg hover:bg-blue-500/20 transition-colors">
+          <button className="bg-blue-500/10 border border-blue-500/20 text-blue-400 p-4 rounded-lg hover:bg-blue-500/20 transition-colors flex flex-col items-center text-center">
             <MessageSquare className="w-6 h-6 mb-2" />
-            <span className="font-medium">Voir les messages</span>
+            <span className="font-medium text-sm">Voir les messages</span>
           </button>
+          <button 
+            onClick={handleExport}
+            className="bg-purple-500/10 border border-purple-500/20 text-purple-400 p-4 rounded-lg hover:bg-purple-500/20 transition-colors flex flex-col items-center text-center"
+          >
+            <Download className="w-6 h-6 mb-2" />
+            <span className="font-medium text-sm">Exporter Projets</span>
+          </button>
+          <label className="bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-lg hover:bg-green-500/20 transition-colors flex flex-col items-center text-center cursor-pointer">
+            <Upload className="w-6 h-6 mb-2" />
+            <span className="font-medium text-sm">Importer Projets</span>
+            <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+          </label>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, X, Download, Upload } from 'lucide-react';
 import { api, type Project } from '../../lib/api';
 
 const API_URL = 'https://backend-37sm.onrender.com/api';
@@ -75,6 +75,44 @@ export default function ProjectsAdmin() {
     }
   };
 
+  const handleExport = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projects, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "projects_export.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        const response = await fetch(`${API_URL}/projects/bulk`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(json)
+        });
+
+        if (response.ok) {
+          alert('Importation réussie !');
+          fetchProjects();
+        } else {
+          alert('Erreur lors de l\'importation');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Fichier JSON invalide');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -111,16 +149,33 @@ export default function ProjectsAdmin() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-white">Gestion des projets</h2>
-        <button
-          onClick={handleCreate}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm sm:text-base"
-        >
-          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="hidden sm:inline">Nouveau projet</span>
-          <span className="sm:hidden">Ajouter</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleExport}
+            className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm sm:text-base border border-gray-700"
+            title="Exporter en JSON"
+          >
+            <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Exporter</span>
+          </button>
+          
+          <label className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm sm:text-base border border-gray-700 cursor-pointer" title="Importer depuis JSON">
+            <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Importer</span>
+            <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+          </label>
+
+          <button
+            onClick={handleCreate}
+            className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm sm:text-base"
+          >
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Nouveau projet</span>
+            <span className="sm:hidden">Ajouter</span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile: cartes */}
