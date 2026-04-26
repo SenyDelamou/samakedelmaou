@@ -1,26 +1,37 @@
-import { Github, Linkedin, Download, ArrowDown } from 'lucide-react';
+import { Github, Linkedin, Download, ArrowDown, Eye, X, ShieldAlert } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const API_URL = 'http://localhost:5000/api';
 
 export default function Hero() {
   const [projectCount, setProjectCount] = useState(0);
+  const [cvUrl, setCvUrl] = useState('/cv.pdf');
+  const [isCvModalOpen, setIsCvModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    // ... (fetch stats remains same)
+    const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_URL}/projects`);
-        if (response.ok) {
-          const projects = await response.json();
+        const [projRes, cvRes] = await Promise.all([
+          fetch(`${API_URL}/projects`),
+          fetch(`${API_URL}/auth/cv`)
+        ]);
+
+        if (projRes.ok) {
+          const projects = await projRes.json();
           setProjectCount(projects.length);
         }
+
+        if (cvRes.ok) {
+          const data = await cvRes.json();
+          setCvUrl(data.cv_url || '/cv.pdf');
+        }
       } catch (error) {
-        console.error('Erreur lors de la récupération des projets:', error);
-        setProjectCount(0);
+        console.error('Erreur lors de la récupération des données:', error);
       }
     };
 
-    fetchProjects();
+    fetchStats();
   }, []);
   return (
     <section
@@ -61,14 +72,95 @@ export default function Hero() {
             >
               Voir les projets
             </a>
-            <a
-              href="#"
+            <button
+              onClick={() => setIsCvModalOpen(true)}
               className="flex items-center gap-2 border border-gray-700 hover:border-cyan-500/50 text-gray-300 hover:text-white font-semibold px-7 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5"
             >
               <Download className="w-4 h-4" />
               CV
-            </a>
+            </button>
           </div>
+
+          {/* CV Modal */}
+          {isCvModalOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-950/90 backdrop-blur-sm animate-in fade-in duration-300">
+              <div className="relative w-full max-w-5xl h-[90vh] bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                {/* Modal Header */}
+                <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-cyan-500/10 text-cyan-400 rounded-lg">
+                      <ShieldAlert className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold">Visionneuse de CV Sécurisée</h3>
+                      <p className="text-xs text-gray-500">Capture d'écran et copie désactivées pour protéger les données.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <a
+                      href={cvUrl}
+                      download="CV_Samake_DELAMOU.pdf"
+                      className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-sm font-bold px-4 py-2 rounded-xl transition-all"
+                    >
+                      <Download className="w-4 h-4" />
+                      Télécharger
+                    </a>
+                    <button
+                      onClick={() => setIsCvModalOpen(false)}
+                      className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal Content - The CV Viewer */}
+                <div className="flex-1 relative overflow-hidden bg-gray-800 select-none group" 
+                     onContextMenu={(e) => e.preventDefault()}
+                >
+                  {/* Extreme Protection Overlay - Blurs when cursor leaves or window loses focus */}
+                  <div className="absolute inset-0 z-50 pointer-events-none transition-all duration-300 backdrop-blur-0 group-hover:backdrop-blur-0 backdrop-blur-3xl bg-gray-950/20 flex items-center justify-center opacity-0 group-hover:opacity-0 opacity-100">
+                     <div className="bg-gray-900/80 p-6 rounded-2xl border border-gray-700 text-center">
+                        <ShieldAlert className="w-12 h-12 text-cyan-500 mx-auto mb-4 animate-bounce" />
+                        <p className="text-white font-bold">Document Protégé</p>
+                        <p className="text-gray-400 text-sm">Survolez pour visualiser</p>
+                     </div>
+                  </div>
+
+                  {/* Moving Watermark */}
+                  <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full flex flex-wrap gap-20 opacity-[0.05] rotate-[-35deg] scale-150">
+                      {[...Array(20)].map((_, i) => (
+                        <span key={i} className="text-white font-black text-2xl whitespace-nowrap">
+                          CONFIDENTIAL - {new Date().toLocaleDateString()} - {new Date().toLocaleDateString()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* The CV Iframe */}
+                  <iframe
+                    src={`${cvUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                    className="w-full h-full border-none pointer-events-auto filter grayscale-[0.2]"
+                    title="Curriculum Vitae"
+                  />
+                  
+                  {/* Anti-print protection - CSS that hides content when printing */}
+                  <style>{`
+                    @media print {
+                      body { display: none !important; }
+                    }
+                  `}</style>
+
+                  {/* Floating protection message */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-gray-950/80 px-4 py-2 rounded-full border border-gray-800 text-gray-400 text-xs flex items-center gap-2 z-20">
+                    <ShieldAlert className="w-3 h-3 text-cyan-500" />
+                    Protection Anti-Capture Activée
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-5 mt-10 justify-center md:justify-start">
             <a href="https://github.com/Delamou1234" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors duration-200">

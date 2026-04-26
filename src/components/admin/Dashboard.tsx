@@ -368,6 +368,64 @@ function SettingsView() {
         </form>
       </div>
 
+      {/* CV Management */}
+      <div className="mt-8 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-gray-800 bg-gray-900/50 flex items-center gap-3">
+          <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
+            <Download className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Gestion du CV</h3>
+            <p className="text-gray-400 text-sm">Définissez le lien vers votre CV (PDF ou lien externe).</p>
+          </div>
+        </div>
+
+        <div className="p-6">
+           <form onSubmit={async (e) => {
+             e.preventDefault();
+             const cv_url = (e.currentTarget.elements.namedItem('cv_url') as HTMLInputElement).value;
+             const password = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value;
+             
+             try {
+               const res = await fetch(`${API_URL}/auth/update-cv`, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ password, cv_url })
+               });
+               if (res.ok) alert('CV mis à jour !');
+               else alert('Erreur : Mot de passe incorrect');
+             } catch (error) {
+               alert('Erreur de connexion');
+             }
+           }} className="space-y-4">
+             <div>
+               <label className="block text-gray-400 text-sm font-medium mb-2">Lien du CV (URL ou /cv.pdf)</label>
+               <input
+                 name="cv_url"
+                 type="text"
+                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+                 placeholder="https://drive.google.com/..."
+               />
+             </div>
+             <div>
+               <label className="block text-gray-400 text-sm font-medium mb-2">Mot de passe pour confirmer</label>
+               <input
+                 name="password"
+                 type="password"
+                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500"
+                 placeholder="••••••••"
+               />
+             </div>
+             <button
+               type="submit"
+               className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all"
+             >
+               Enregistrer le nouveau lien
+             </button>
+           </form>
+        </div>
+      </div>
+
       <div className="mt-8 bg-blue-500/10 border border-blue-500/20 p-6 rounded-2xl flex gap-4">
         <div className="text-blue-400">
           <Zap className="w-6 h-6" />
