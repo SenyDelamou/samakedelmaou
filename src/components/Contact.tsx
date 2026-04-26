@@ -4,7 +4,7 @@ import { api, type Message } from '../lib/api';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function Contact() {
   const [form, setForm] = useState<Message>({ name: '', email: '', message: '' });

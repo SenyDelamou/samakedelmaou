@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Brain, Database, BarChart2, Code2, Layers, X, Loader2 } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface Skill {
   id: number;

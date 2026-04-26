@@ -8,7 +8,7 @@ import ProjectsAdmin from './ProjectsAdmin';
 import MessagesAdmin from './MessagesAdmin';
 import SkillsAdmin from './SkillsAdmin';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 type AdminView = 'dashboard' | 'projects' | 'messages' | 'skills' | 'settings';
 
